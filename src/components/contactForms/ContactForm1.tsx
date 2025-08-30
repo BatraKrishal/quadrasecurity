@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import ContactFormCarousel from "../carousels/ContactFormCarousel";
+import { toast } from "sonner";
 
 export const ContactForm1 = () => {
   const [firstName, setFirstName] = useState("");
@@ -11,9 +12,77 @@ export const ContactForm1 = () => {
   const [city, setCity] = useState("");
   const [service, setService] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Combine first + last name
+    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+
+    // Validations
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!fullName || !nameRegex.test(fullName)) {
+      toast.error("Please enter a valid name (letters and spaces only)");
+      return;
+    }
+
+    const fullMobile = `+91${contact.trim()}`;
+    const mobileRegex = /^\+91[7-9][0-9]{9}$/;
+    if (!mobileRegex.test(fullMobile)) {
+      toast.error("Please enter a valid 10-digit Indian mobile number.");
+      return;
+    }
+
+    if (!contact.trim()) {
+      toast.error("Mobile number is required");
+      return;
+    }
+
+    const payload = {
+      name: fullName,
+      mobile: fullMobile,
+      email,
+      city,
+      service,
+    };
+
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success("Your request has been submitted successfully!");
+        // reset form
+        setFirstName("");
+        setLastName("");
+        setContact("");
+        setEmail("");
+        setCity("");
+        setService("");
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error submitting the form.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="w-full flex items-center justify-center py-5 min-h-screen bg-indigo-800  px-3">
-      <div className="flex w-5/8 items-center justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="flex w-5/8 items-center justify-center"
+      >
         <div className="md:w-[50%]">
           <h2 className="font-bold text-5xl text-center p-3">
             Get in Touch Today
@@ -59,7 +128,7 @@ export const ContactForm1 = () => {
             className="bg-white w-full focus:border mb-3 rounded-lg h-12  placeholder:text-gray-300 px-2 py-5 focus:border-indigo-700 caret-black text-black focus:ring-2 focus:ring-gray-200/40 focus:outline-none "
           />
           <select
-            id="cars"
+            id="city"
             value={city}
             onChange={(e) => setCity(e.target.value)}
             className={`bg-white text-black outline-none h-12 focus:border focus:border-indigo-700 focus:ring-gray-200/40  rounded-lg w-full mb-3 px-2 ${
@@ -76,11 +145,11 @@ export const ContactForm1 = () => {
             <option value="Others">Others</option>
           </select>
           <select
-            id="cars"
+            id="service"
             value={service}
             onChange={(e) => setService(e.target.value)}
             className={`bg-white text-black outline-none h-12 focus:border focus:border-indigo-700 focus:ring-gray-200/40  rounded-lg w-full mb-3 px-2 ${
-              city === "" ? "text-gray-400" : "text-black"
+              service === "" ? "text-gray-400" : "text-black"
             }`}
           >
             <option value="" disabled className="text-gray-400">
@@ -117,9 +186,9 @@ export const ContactForm1 = () => {
             </button>
           </div>
         </div>
-      </div>
+      </form>
       <div className="w-3/8 flex items-center justify-center relative">
-        <ContactFormCarousel/>
+        <ContactFormCarousel />
       </div>
     </div>
   );
