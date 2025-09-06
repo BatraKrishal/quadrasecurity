@@ -21,6 +21,9 @@
   .text-shadow-lg {
     text-shadow: 3px 3px 6px rgba(0,0,0,0.35);
   }
+  .shadow-xl{
+    box-shadow:6px 7px 4px rgba(0, 0, 0, 0.47) ;
+  }
 }
 
 
