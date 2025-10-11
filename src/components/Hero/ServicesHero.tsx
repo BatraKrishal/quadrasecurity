@@ -60,9 +60,7 @@ export default function AboutHero() {
           />
         </div> */}
         <div className="flex flex-col items-center justify-center h-[25rem] bg-gradient-to-b from-blue-900 to-indigo-700 mx-auto ">
-          <p className="text-white dark:text-neutral-200 text-base mb-8">
-            The road to freedom starts from here
-          </p>
+         
           <TypewriterEffect words={words}  />
           <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 mt-10">
             <div className="flex-1 mt-8 md:mt-0">
